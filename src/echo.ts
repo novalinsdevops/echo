@@ -20,6 +20,7 @@ export default class Echo {
      */
     constructor(options: any) {
         this.options = options;
+		if (this.options.debug_trace) console.log('Echo.constructor');
         this.connect();
 
         if (!this.options.withoutInterceptors) {
@@ -31,6 +32,7 @@ export default class Echo {
      * Get a channel instance by name.
      */
     channel(channel: string): Channel {
+		if (this.options.debug_trace) console.log('Echo.channel', { channel });
         return this.connector.channel(channel);
     }
 
@@ -41,32 +43,38 @@ export default class Echo {
         if (this.options.broadcaster == 'pusher') {
             this.connector = new PusherConnector(this.options);
         } else if (this.options.broadcaster == 'socket.io') {
+			if (this.options.debug_trace) console.log('Echo.connect (socket.io)');
             this.connector = new SocketIoConnector(this.options);
         } else if (this.options.broadcaster == 'null') {
             this.connector = new NullConnector(this.options);
         } else if (typeof this.options.broadcaster == 'function') {
             this.connector = new this.options.broadcaster(this.options);
-        }
+        } else {
+			if (this.options.debug_trace) console.log('Echo.connect (unknown broadcaster)');
+		}
     }
 
     /**
      * Disconnect from the Echo server.
      */
     disconnect(): void {
+		if (this.options.debug_trace) console.log('Echo.disconnect');
         this.connector.disconnect();
     }
 
     /**
      * Get a presence channel instance by name.
      */
-    join(channel: string): PresenceChannel {
-        return this.connector.presenceChannel(channel);
+    join(channel: string, extra_data ): PresenceChannel {
+		if (this.options.debug_trace) console.log('Echo.join', { channel, extra_data });
+        return this.connector.presenceChannel(channel, extra_data);
     }
 
     /**
      * Leave the given channel, as well as its private and presence variants.
      */
     leave(channel: string): void {
+		if (this.options.debug_trace) console.log('Echo.leave');
         this.connector.leave(channel);
     }
 
@@ -74,6 +82,7 @@ export default class Echo {
      * Leave the given channel.
      */
     leaveChannel(channel: string): void {
+		if (this.options.debug_trace) console.log('Echo.leaveChannel');
         this.connector.leaveChannel(channel);
     }
 
@@ -81,6 +90,7 @@ export default class Echo {
      * Leave all channels.
      */
     leaveAllChannels(): void {
+		if (this.options.debug_trace) console.log('Echo.leaveAllChannels');
         for (const channel in this.connector.channels) {
             this.leaveChannel(channel);
         }
@@ -90,6 +100,7 @@ export default class Echo {
      * Listen for an event on a channel instance.
      */
     listen(channel: string, event: string, callback: Function): Channel {
+		if (this.options.debug_trace) console.log('Echo.listen');
         return this.connector.listen(channel, event, callback);
     }
 
@@ -97,6 +108,7 @@ export default class Echo {
      * Get a private channel instance by name.
      */
     private(channel: string): Channel {
+		if (this.options.debug_trace) console.log('Echo.private');
         return this.connector.privateChannel(channel);
     }
 
@@ -104,6 +116,7 @@ export default class Echo {
      * Get a private encrypted channel instance by name.
      */
     encryptedPrivate(channel: string): Channel {
+		if (this.options.debug_trace) console.log('Echo.encryptedPrivate');
         return this.connector.encryptedPrivateChannel(channel);
     }
 
@@ -111,6 +124,7 @@ export default class Echo {
      * Get the Socket ID for the connection.
      */
     socketId(): string {
+		if (this.options.debug_trace) console.log('Echo.socketId');
         return this.connector.socketId();
     }
 
@@ -120,18 +134,22 @@ export default class Echo {
      */
     registerInterceptors(): void {
         if (typeof Vue === 'function' && Vue.http) {
+			if (this.options.debug_trace) console.log('Echo.registerInterceptors.Vue');
             this.registerVueRequestInterceptor();
         }
 
         if (typeof axios === 'function') {
+			if (this.options.debug_trace) console.log('Echo.registerInterceptors.aios');
             this.registerAxiosRequestInterceptor();
         }
 
         if (typeof jQuery === 'function') {
+			if (this.options.debug_trace) console.log('Echo.registerInterceptors.jQuery');
             this.registerjQueryAjaxSetup();
         }
 
         if (typeof Turbo === 'object') {
+			if (this.options.debug_trace) console.log('Echo.registerInterceptors.Turbo');
             this.registerTurboRequestInterceptor();
         }
     }

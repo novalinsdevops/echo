@@ -25,6 +25,8 @@ export class SocketIoChannel extends Channel {
      */
     eventFormatter: EventFormatter;
 
+	extra_data: any;
+
     /**
      * The event callbacks applied to the socket.
      */
@@ -38,13 +40,14 @@ export class SocketIoChannel extends Channel {
     /**
      * Create a new class instance.
      */
-    constructor(socket: any, name: string, options: any) {
+    constructor(socket: any, name: string, options: any, extra_data?: any) {
         super();
 
         this.name = name;
         this.socket = socket;
         this.options = options;
         this.eventFormatter = new EventFormatter(this.options.namespace);
+		this.extra_data = extra_data;
 
         this.subscribe();
     }
@@ -56,6 +59,7 @@ export class SocketIoChannel extends Channel {
         this.socket.emit('subscribe', {
             channel: this.name,
             auth: this.options.auth || {},
+			extra_data: this.extra_data,
         });
     }
 

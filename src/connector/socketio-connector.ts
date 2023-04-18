@@ -19,11 +19,15 @@ export class SocketIoConnector extends Connector {
      * Create a fresh Socket.io connection.
      */
     connect(): void {
+		// if (this.options.debug_trace) console.log('SocketIoConnector.connect');
         let io = this.getSocketIO();
+		// if (this.options.debug_trace) console.log('SocketIoConnector.connect.1');
 
         this.socket = io(this.options.host, this.options);
+		// if (this.options.debug_trace) console.log('SocketIoConnector.connect.2', this.socket);
 
         this.socket.on('reconnect', () => {
+			// if (this.options.debug_trace) console.log('SocketIoConnector.connect.reconnect');
             Object.values(this.channels).forEach((channel) => {
                 channel.subscribe();
             });
@@ -79,12 +83,13 @@ export class SocketIoConnector extends Connector {
     /**
      * Get a presence channel instance by name.
      */
-    presenceChannel(name: string): SocketIoPresenceChannel {
+    presenceChannel(name: string, extra_data): SocketIoPresenceChannel {
         if (!this.channels['presence-' + name]) {
             this.channels['presence-' + name] = new SocketIoPresenceChannel(
                 this.socket,
                 'presence-' + name,
-                this.options
+                this.options,
+				extra_data
             );
         }
 

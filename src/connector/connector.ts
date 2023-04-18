@@ -96,7 +96,7 @@ export abstract class Connector {
     /**
      * Get a presence channel instance by name.
      */
-    abstract presenceChannel(channel: string): PresenceChannel;
+    abstract presenceChannel(channel: string, extra_data?: any): PresenceChannel;
 
     /**
      * Leave the given channel, as well as its private and presence variants.
